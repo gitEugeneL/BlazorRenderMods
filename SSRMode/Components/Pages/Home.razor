@@ -1,7 +1,66 @@
-﻿@page "/"
+@page "/"
+@using Application.Features.Persons.Queries.GetAllPersons
+@using SSRMode.Models
 
-<PageTitle>Home</PageTitle>
+@inject ISender Sender
+@attribute [StreamRendering]
 
-<h1>Hello, world!</h1>
+<PageTitle>Items</PageTitle>
 
-Welcome to your new app.
+<div class="container mt-5">
+    <h3 class="mb-5">Persons</h3>
+    
+    @if (_persons.Count is 0)
+    {
+        <p>Loading items...</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>DateOfBirth</th>
+                <th>City</th>
+                <th>PostalCode</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var person in _persons)
+            {
+                <tr>
+                    <td>@person.Email</td>
+                    <td>@person.Name</td>
+                    <td>@person.Surname</td>
+                    <td>@person.DateOfBirth</td>
+                    <td>@person.City</td>
+                    <td>@person.PostalCode</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="edit/@person.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <a class="btn btn-success" href="create">Add record</a>
+    }
+</div>
+
+@code
+{
+    private List<Person> _persons = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Sender.Send(new GetAllPersonsQuery());
+        
+        _persons = result
+            .Select(r => new Person()
+                .ToPersonResponse(r))
+            .ToList();
+    }
+}

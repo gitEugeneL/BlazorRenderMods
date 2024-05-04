@@ -1,0 +1,14 @@
+services: 
+  renderMods.database:
+    container_name: renderMods.database
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: DevPassword@1 # SA - default user
+    ports:
+      - "1433:1433"
+    volumes:
+      - renderMods.database-volume:/var/opt/mssql:rw
+   
+volumes:
+  renderMods.database-volume:
