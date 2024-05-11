@@ -27,6 +27,8 @@ public class CreatePersonHandler(IAppDbContext dbContext) : IRequestHandler<Crea
             .Persons
             .AddAsync(person, cancellationToken);
 
+        await dbContext.SaveChangesAsync(cancellationToken);
+
         return new PersonResponse().ToPersonResponse(person);
     }
 }

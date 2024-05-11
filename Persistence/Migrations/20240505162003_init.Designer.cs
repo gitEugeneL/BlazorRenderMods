@@ -9,10 +9,10 @@ using Persistence.Contexts;
 
 #nullable disable
 
-namespace SSRMode.Migrations
+namespace Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240504145147_init")]
+    [Migration("20240505162003_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace SSRMode.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SSRMode.Models.Perosn", b =>
+            modelBuilder.Entity("Domain.Entities.Person", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,7 +68,7 @@ namespace SSRMode.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("78361802-97ef-4552-b6e5-4668bba1986e"),
+                            Id = new Guid("093c190b-55b8-45aa-8a47-25340dee577e"),
                             City = "Barcelona",
                             DateOfBirth = new DateOnly(2020, 12, 31),
                             Email = "e.smith@test.com",

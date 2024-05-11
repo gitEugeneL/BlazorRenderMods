@@ -11,6 +11,7 @@ internal sealed class GetAllPersonsHandler(IAppDbContext dbContext)
     {
         return await dbContext
             .Persons
+            .AsNoTracking()
             .Select(p => new PersonResponse()
                 .ToPersonResponse(p))
             .ToListAsync(cancellationToken);

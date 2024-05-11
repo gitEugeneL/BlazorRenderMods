@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SSRMode.Migrations
+namespace Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class init : Migration
@@ -31,7 +31,7 @@ namespace SSRMode.Migrations
             migrationBuilder.InsertData(
                 table: "Persons",
                 columns: new[] { "Id", "City", "DateOfBirth", "Email", "Name", "PostalCode", "Surname" },
-                values: new object[] { new Guid("78361802-97ef-4552-b6e5-4668bba1986e"), "Barcelona", new DateOnly(2020, 12, 31), "e.smith@test.com", "Eugene", "02495F", "Smith" });
+                values: new object[] { new Guid("093c190b-55b8-45aa-8a47-25340dee577e"), "Barcelona", new DateOnly(2020, 12, 31), "e.smith@test.com", "Eugene", "02495F", "Smith" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Persons_Email",
