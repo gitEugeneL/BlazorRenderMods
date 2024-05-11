@@ -1,0 +1,81 @@
+@page "/"
+
+@rendermode InteractiveServer
+
+@using Application.Features.Persons.Commands.DeletePerson
+@using Application.Features.Persons.Queries.GetAllPersons
+@using Shared.Models
+
+@inject NavigationManager NavigationManager
+@inject ISender Sender
+
+<PageTitle>Home</PageTitle>
+
+<div class="container mt-5">
+    <h3 class="mb-5">Persons</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>DateOfBirth</th>
+            <th>City</th>
+            <th>PostalCode</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var person in _persons)
+        {
+            <tr>
+                <td>@person.Email</td>
+                <td>@person.Name</td>
+                <td>@person.Surname</td>
+                <td>@person.DateOfBirth</td>
+                <td>@person.City</td>
+                <td>@person.PostalCode</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" @onclick="@(() => Edit(person.Id))">Edit</button>
+                    <button class="btn btn-danger btn-sm" @onclick="@(() => Delete(person.Id))">Delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <button class="btn btn-success" @onclick="Create">Add record</button>
+</div>
+
+@code
+{
+    private List<PersonModel> _persons = [];
+
+    protected override async Task OnInitializedAsync() => _persons = await GetAll();
+
+    private async Task<List<PersonModel>> GetAll()
+    {
+        var result = await Sender.Send(new GetAllPersonsQuery());
+        return result
+            .Select(p => new PersonModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Surname = p.Surname,
+                Email = p.Email,
+                City = p.City,
+                PostalCode = p.PostalCode,
+                DateOfBirth = p.DateOfBirth
+            })
+            .ToList();
+    }
+    
+    private void Create() => NavigationManager.NavigateTo("/manage");
+    
+    private void Edit(Guid id) => NavigationManager.NavigateTo($"/manage/{id}");
+
+    private async Task Delete(Guid id)
+    {
+        await Sender.Send(new DeletePersonCommand(id));
+        _persons = await GetAll();
+    }
+}

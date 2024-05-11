@@ -1,0 +1,146 @@
+@page "/manage"
+@page "/manage/{Id:guid}"
+
+@rendermode InteractiveServer
+
+@using Application.Common.Exceptions
+@using Application.Features.Persons.Commands.CreatePerson
+@using Application.Features.Persons.Commands.UpdatePerson
+@using Application.Features.Persons.Queries.GetPersonById
+@using Shared.Models
+
+@inject NavigationManager NavigationManager
+@inject ISender Sender
+
+<PageTitle>@(_personExists ? "Update person" : "Add a new person")</PageTitle>
+
+<div class="container mt-5">
+    <h3 class="mb-5">@(_personExists ? "Update person" : "Add a new person")</h3>
+    
+    <EditForm Enhance Model="PersonModel" OnValidSubmit="SubmitForm">
+        <DataAnnotationsValidator />
+    
+        @if (!_personExists)
+        {
+            <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <InputText id="email" @oninput="EmailChanged" @bind-Value="PersonModel.Email"  class="form-control" />
+                <ValidationMessage For="() => PersonModel.Email"/>
+            </div>
+        }
+        <div class="form-group mb-3">
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="PersonModel.Name" class="form-control" />
+            <ValidationMessage For="() => PersonModel.Name"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="surname">Surname</label>
+            <InputText id="surname" @bind-Value="PersonModel.Surname" class="form-control" />
+            <ValidationMessage For="() => PersonModel.Surname"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="date">Date of birth</label>
+            <InputDate id="date" @bind-Value="PersonModel.DateOfBirth" class="form-control" />
+            <ValidationMessage For="() => PersonModel.DateOfBirth"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="city">City</label>
+            <InputText id="city" @bind-Value="PersonModel.City" class="form-control" />
+            <ValidationMessage For="() => PersonModel.City"/>
+        </div>
+        <div class="form-group mb-3">
+            <label for="postalCode">Postal code</label>
+            <InputText id="postalCode" @bind-Value="PersonModel.PostalCode" class="form-control" />
+            <ValidationMessage For="() => PersonModel.PostalCode"/>
+        </div>
+        <div class="form-group mb-3">
+            <button type="submit" class="btn btn-primary">@(_personExists ? "Update" : "Create")</button>
+        </div>
+    </EditForm>
+    
+    @if (_error is not null)
+    {
+        <p>@_error</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private PersonModel PersonModel { get; init; } = new();
+
+    private bool _personExists;
+
+    private string? _error;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id != Guid.Empty)
+        {
+            try
+            {
+                var result = await Sender.Send(new GetPersonByIdQuery(Id));
+                _personExists = true;
+                PersonModel.Id = result.Id;
+                PersonModel.Name = result.Name;
+                PersonModel.Surname = result.Surname;
+                PersonModel.Email = result.Email;
+                PersonModel.City = result.City;
+                PersonModel.PostalCode = result.PostalCode;
+                PersonModel.DateOfBirth = result.DateOfBirth;
+                
+            }
+            catch (NotFoundException)
+            {
+                _personExists = false;
+            }
+        }
+    }
+
+    private void EmailChanged() => _error = null;
+    
+    private void NavigateToHome() => NavigationManager.NavigateTo("/");
+
+    private async Task SubmitForm()
+    {
+        if (_personExists)
+            await Update();
+        else
+            await Create();
+    }
+
+    private async Task Create()
+    {
+        try 
+        {
+            await Sender.Send(new CreatePersonCommand(
+                Name: PersonModel.Name,
+                Surname: PersonModel.Surname,
+                Email: PersonModel.Email,
+                City: PersonModel.City,
+                PostalCode: PersonModel.PostalCode,
+                DateOfBirth: PersonModel.DateOfBirth
+            ));
+            NavigateToHome();
+        }
+        catch (AlreadyExistException)
+        {
+            _error = $"Person: {PersonModel.Email} already exists";
+        }
+    }
+
+    private async Task Update()
+    {
+        await Sender.Send(new UpdatePersonCommand(
+            Id: PersonModel.Id,
+            Name: PersonModel.Name,
+            Surname: PersonModel.Surname,
+            City: PersonModel.City,
+            PostalCode: PersonModel.PostalCode,
+            DateOfBirth: PersonModel.DateOfBirth
+        ));
+        NavigateToHome();
+    }
+}

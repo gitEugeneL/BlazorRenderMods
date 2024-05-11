@@ -1,14 +1,15 @@
 using Application;
+using InteractiveSSRMode.Components;
 using Persistence;
-using SSRMode.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 /*** Register services ***/
-builder.Services.AddApplicationServices();
-builder.Services.AddPersistenceServices(builder.Configuration);
+builder.Services
+    .AddApplicationServices()
+    .AddPersistenceServices(builder.Configuration);
 
-builder.Services.AddRazorComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 var app = builder.Build();
 
@@ -23,6 +24,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();
