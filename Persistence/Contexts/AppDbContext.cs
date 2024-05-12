@@ -6,7 +6,7 @@ namespace Persistence.Contexts;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
 {
-    public DbSet<Person> Persons { get; set; }
+    public DbSet<Person> Persons { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

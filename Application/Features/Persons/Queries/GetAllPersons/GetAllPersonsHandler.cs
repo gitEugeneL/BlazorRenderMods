@@ -1,4 +1,6 @@
 using Application.Interfaces;
+using Contracts;
+using Contracts.Person;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +14,16 @@ internal sealed class GetAllPersonsHandler(IAppDbContext dbContext)
         return await dbContext
             .Persons
             .AsNoTracking()
-            .Select(p => new PersonResponse()
-                .ToPersonResponse(p))
+            .Select(p => new PersonResponse 
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Surname = p.Surname,
+                Email = p.Email,
+                City = p.City,
+                PostalCode = p.PostalCode,
+                DateOfBirth = p.DateOfBirth 
+            })
             .ToListAsync(cancellationToken);
     }
 }

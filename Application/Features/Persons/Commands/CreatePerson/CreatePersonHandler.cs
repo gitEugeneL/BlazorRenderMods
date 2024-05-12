@@ -1,5 +1,7 @@
 using Application.Common.Exceptions;
 using Application.Interfaces;
+using Contracts;
+using Contracts.Person;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +28,17 @@ public class CreatePersonHandler(IAppDbContext dbContext) : IRequestHandler<Crea
         await dbContext
             .Persons
             .AddAsync(person, cancellationToken);
+        await dbContext
+            .SaveChangesAsync(cancellationToken);
 
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return new PersonResponse().ToPersonResponse(person);
+        return new PersonResponse
+        {
+            Id = person.Id,
+            Name = person.Name,
+            Surname = person.Surname,
+            City = person.City,
+            PostalCode = person.PostalCode,
+            DateOfBirth = person.DateOfBirth
+        };
     }
 }

@@ -1,3 +1,5 @@
+using Contracts;
+using Contracts.Person;
 using MediatR;
 
 namespace Application.Features.Persons.Queries.GetAllPersons;

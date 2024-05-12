@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Shared.Models;
+namespace Contracts.Person;
 
-public class PersonModel
+public sealed record PersonModel
 {
     public Guid Id { get; set; }
 

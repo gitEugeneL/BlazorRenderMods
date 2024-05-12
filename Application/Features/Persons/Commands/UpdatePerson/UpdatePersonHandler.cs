@@ -1,5 +1,7 @@
 using Application.Common.Exceptions;
 using Application.Interfaces;
+using Contracts;
+using Contracts.Person;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +26,17 @@ internal sealed class UpdatePersonHandler(IAppDbContext dbContext) : IRequestHan
         dbContext
             .Persons
             .Update(person);
-        
-        await dbContext.SaveChangesAsync(cancellationToken);
-        
-        return new PersonResponse().ToPersonResponse(person);
+        await dbContext
+            .SaveChangesAsync(cancellationToken);
+
+        return new PersonResponse
+        {
+            Id = person.Id,
+            Name = person.Name,
+            Surname = person.Surname,
+            City = person.City,
+            PostalCode = person.PostalCode,
+            DateOfBirth = person.DateOfBirth
+        };
     }
 }

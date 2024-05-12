@@ -1,3 +1,5 @@
+using Contracts;
+using Contracts.Person;
 using FluentValidation;
 using MediatR;
 
